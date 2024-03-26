@@ -1,0 +1,4 @@
+Todas son posibles
+a) p1 -> p2 -> p3
+b) Y=8 -> x*3 -> x=10 -> x*2 + 1 -> x=x+1 = 22
+c) Y=8 -> x*3 -> x=10 -> x=x+1 -> x*2 +1 =23

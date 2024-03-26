@@ -1,0 +1,9 @@
+int cant=0;
+int[] arr[...];
+int N
+
+process A[id:0..M]{
+    if arr[id]==N{
+        <cant++>;
+    }
+}

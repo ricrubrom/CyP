@@ -1,0 +1,9 @@
+cola cola;
+recurso rec;
+process getter::{
+    < await not empty(cola);
+    rec= pop(cola);
+    // Usar recurso;
+    push(cola, rec);
+    >
+}
