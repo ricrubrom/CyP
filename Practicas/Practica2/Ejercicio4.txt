@@ -1,0 +1,168 @@
+A)
+
+sem mutex=1;
+
+process Persona(id=0..N-1){
+    Documento doc;
+    P(mutex);
+    imprimir(doc);
+    V(mutex);
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+B)
+
+sem mutex=1, turno[N]=[N] 0;
+bool libre=true;
+cola cola;
+
+process Persona(id=0..N-1){
+    # Implemento request
+    Documento doc;
+    P(mutex);
+    if(!libre){
+        push(cola, id);
+        V(mutex);
+        P(turno[id]);
+    }
+    libre=false;
+    V(mutex);
+
+    imprimir(doc);
+
+    #implemento Release
+    P(mutex);
+    if(!empty(cola)){
+        V(turno[pop(cola)]);
+    } else{
+        libre=true;
+        V(mutex);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C)
+
+sem mutex=1, turno[N]=[N] 0;
+bool libre=true;
+cola cola;
+
+process Persona(id=0..N-1){
+    # Implemento request
+    int edad;
+    Documento doc;
+    P(mutex);
+    if(!libre){
+        push(cola, id, edad);
+        V(mutex);
+        P(turno[id]);
+    }
+    libre=false;
+    V(mutex);
+
+    imprimir(doc);
+
+    #implemento Release
+    P(mutex);
+    if(!empty(cola)){
+        V(turno[pop(cola)]);
+    } else{
+        libre=true;
+        V(mutex);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D)
+
+sem[] mutex[N]=(1, [N-1] 0);
+
+
+process Persona(id=0..N-1){
+    Documento doc;
+    P(id);
+    imprimir(doc);
+    if (id!=N-1){
+        V(++id);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E)
+
+sem mutex=1, turno[N]=[N] 0, pedido=0, listo=0;
+cola cola;
+
+process Empleado{
+    int atendidos=0;
+    while (atendidos<N){
+        P(pedido);
+        P(mutex);
+        id=pop(cola);
+        V(mutex);
+        V(turno[id]);
+        P(listo);
+        atendidos++;
+    }
+}
+
+
+process Persona(id=0..N-1){
+    Documento doc;
+
+    P(mutex);
+    push(cola, id);
+    V(pedido);
+    V(mutex);
+
+    P(turno[id]);
+
+    imprimir(doc);
+
+    V(listo);
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+F)
+
+sem mutexPersonas=1, mutexImpresoras, turno[N]=[N] 0, pedido=0, listo=10;
+cola impresorasLibres;
+int[] asignada[N];
+cola cola;
+
+process Empleado{
+    int atendidos=0;
+    while (atendidos<N){
+        P(pedido);
+        P(mutexPersonas);
+        id=pop(cola);
+        V(mutexPersonas);
+        
+        P(mutexImpresoras);
+        asginada[id]=pop(impresorasLibres);
+        V(mutexImpresoras);
+
+        V(turno[id]);
+        P(listo);
+        atendidos++;
+    }
+}
+
+
+process Persona(id=0..N-1){
+    Documento doc;
+
+    P(mutexPersonas);
+    push(cola, id);
+    V(pedido);
+    V(mutexPersonas);
+
+    P(turno[id]);
+
+    imprimir(asignada[id], doc);
+    P(mutexImpresoras);
+    push(impresorasLibres, idImpresora);
+    V(mutexImpresoras);
+
+    V(listo);
+}

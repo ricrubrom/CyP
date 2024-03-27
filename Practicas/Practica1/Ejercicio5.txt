@@ -1,0 +1,26 @@
+cola cola;
+int presentes=0, corregidos=0;
+int[] nota[P]=-1
+
+process profesores(id=0..2){
+    examen corregir;
+    while(corregidos!=P){
+        <await not empty(cola) or corregidos == P> ;
+        if corregidos == P{ 
+            break;
+        }
+        id, corregir= pop(cola);
+        // Corrige
+        nota[id] = #Nota del alumno
+        <corregidos++;>
+    }
+}
+
+process alumnos(id=0..P-1){
+    examen examen =  //Examen ;
+    <presentes++>;
+    <await presentes==P>
+    # resuelven el examen
+    push(cola, id, examen)
+    <await nota[id]!=-1>
+}

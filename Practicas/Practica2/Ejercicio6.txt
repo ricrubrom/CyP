@@ -1,0 +1,58 @@
+sem mutexCola=1, mutexVariable=1;, presentes=0, espera[C]=[C] 0, leido=1, microsSubida[4]=0, microsBajada[4]=0;
+int[] combis[4]=[4] 0
+bool libre = true;
+int solicitado;
+cola cola;
+
+
+process vendedor{
+    int id, atendidos=0;
+    while (atendidos < 100){
+        P(presentes);
+        P(mutex);
+        id, solicitado = pop(cola);
+        V(mutex);
+        if combis[solicitado]==25{
+            P(leido);
+            P(mutexVariable);
+            libre = false;
+            V(mutexVariable);
+            V(espera[id]);  
+            skip;
+        }
+        P(leido);
+        P(mutexVariable);
+        libre = true;
+        V(mutexVariable);
+        V(espera[id]);
+        combis[solicitado]++  
+        atendidos++;
+    }
+}
+
+process combi(id=0..3){
+    for (i=0; i<25; i++) -> P(microsSubida[id]);
+    // Viaja
+    for (i=0; i<25; i++) -> V(microsBajada[id]);
+}
+
+process clientes(id=0..C-1){
+    int solicitado;
+    P(mutexCola);
+    push(cola, id, solicitado);
+    V(mutexCola);
+
+    V(presentes);
+
+    P(espera[id]);
+    P(mutexVariable);
+    if(libre){
+        V(mutexVariable);
+        V(leido);
+        V(microsSubida[solicitado]);
+        P(microsBajada[solicitado]);
+    } else {
+        V(leido);
+        V(mutexVariable);
+    }
+}

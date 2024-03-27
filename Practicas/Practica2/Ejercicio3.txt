@@ -1,0 +1,50 @@
+bool[] aprobado[40]=[40] false
+sem alumnos[40]=([40] 0);
+sem entrega = 0;
+sem mutex = 1;
+cola entregados;
+Tarea tareas[40];
+
+process maestra{
+    int idAlumno;
+    tarea tarea;
+    for (i=0; i<40;i++){
+        tareas[i]=randTarea();
+        V(alumnos[i]);
+    }
+
+    int aprobados=0;
+
+    while(aprobados<40){
+        P(entrega);
+        P(mutex);
+        id, tarea= pop(entregados);
+        V(mutex);
+
+        // Corrige
+
+        if (errores!=0){
+            tareas[id]= tarea;
+        } else {
+            aprobado[id]= true;
+            aprobados++;
+        }
+        V[alumnos[id]];
+    }  
+}
+
+process alumno(id=0..40){
+    P(alumnos[id]);
+    tarea tarea=tareas[id];
+    while (!aprobado[id]){
+        // Hacer tarea
+
+        P(mutex);
+        push(entregados, id, tarea);
+        V(mutex);
+
+        V(entrega);
+        
+        P(alumnos[id]);
+    }
+}

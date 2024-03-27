@@ -1,0 +1,51 @@
+sem mutex=1, maquina=1, noAgua=0, agua=0, turno[N]=[N] 0;
+int cant=0, botellas=20, finalizados=20;
+bool libre=true;
+cola cola;
+
+process corredores(id=0..C-1){
+    P(mutex);
+    cant++;
+    if(cant==C){
+        for i=1..C -> V(listos);
+    }
+    V(mutex);
+    P(listos);
+
+    // Hacen la carrera
+
+    P(maquina);
+    finalizados++;
+    if (!libre){
+        push(cola, id);
+        V(maquina);
+        P(turno[id]);
+    }
+    libre=false;
+    V(maquina);
+
+    if(botellas==0){
+        V(noAgua);
+        P(agua);
+    }
+
+    // Toma agua
+    botellas--;
+
+    P(maquina);
+    if(!empty(cola)){
+        int aux=pop(cola);
+        V(turno[aux]);
+    } else {
+        libre=true;
+        V(maquina)    
+    }
+}
+
+process Repositor{
+    while(finalizados!=C){
+        P(noAgua);
+        botellas=20;
+        V(agua);
+    }
+}

@@ -1,0 +1,21 @@
+sem mutex=1, mutexProd[5]=[5] 1;
+int act=0;
+int[] grupo[5]=0;
+int[] unidades[5]=0;
+
+process empleado[id=0..14]{
+    int idGrupo;
+    P(mutex);
+    idGrupo = act div 3;
+    act++;
+    V(mutex);
+
+    P(mutexProd[idGrupo]);
+    while(unidades[idGrupo]<P){
+        unidades[idGrupo]++;
+        V(mutexProd[idGrupo]);
+        // La elaboran
+        P(mutexProd[idGrupo]);
+    }
+    for (i=0; i<3; i++) -> V(mutexProd[idGrupo])
+}

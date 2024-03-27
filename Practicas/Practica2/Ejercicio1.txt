@@ -1,0 +1,15 @@
+cola recurso[5];
+sem mutex = 1;
+sem recursos=5;
+
+process proceso(id=0..N-1){
+    P(recursos);
+    P(mutex);
+    rec=pop(recurso);
+    V(mutex);
+    // Opero
+    P(mutex);
+    push(recurso, rec);
+    V(mutex);
+    V(recursos);
+}

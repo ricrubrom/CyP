@@ -1,0 +1,16 @@
+sem max=7;
+sem trigo=5;
+sem maiz=5;
+
+process camionTrigo(id=0..T-1){
+    P(max); P(trigo);
+    // Descargo
+    V(max); V(trigo);
+}
+
+
+process camionMaiz(id=0..M-1){
+    P(max); P(maiz);
+    // Descargo
+    V(max); V(maiz);
+}

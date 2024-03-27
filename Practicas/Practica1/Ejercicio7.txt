@@ -1,0 +1,23 @@
+bool[] pedidos[T]
+bool[] aceptados[T]
+
+process coordinador{
+    while(true){
+        for (i=0; i<T ; i++) {
+            if pedidos[i]{
+                aceptados[i]=true;
+                while (pedidos[i]) skip;
+                aceptados[i]=false;
+            }
+        }
+    }
+}
+
+process trabajador(id=0..T-1){
+    // Codigo previo a la seccion critica;
+    pedidos[id]=true;
+    while !aceptados[id] skip;
+    // Tarea de seccion critica
+    pedidos[id]=false;
+    // Codigo posterior a la seccion critica
+}
