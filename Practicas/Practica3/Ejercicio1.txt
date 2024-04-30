@@ -1,0 +1,39 @@
+Process client[id=0..N-1]{
+    text res
+    dataBase.makeRequest(id,res);
+}
+
+Monitor dataBase {
+    queue waiting
+    cond freeD, cRes[N]
+    text results[N]
+
+    Procedure makeRequest(id: in int; res: out text){
+        push(waiting, id)
+        signal(freeD)
+        wait(cRes[id])
+        res=results[id]
+    }
+
+    Procedure next(clientID: out int){
+        while (empty(waiting)){
+            wait(freeD)
+        }
+        pop(waiting, clientID)
+    }
+
+    Procedure result(id: in int; res: in text){
+        results[id]
+        signal(cRes[id])
+    }
+
+}
+
+Process manager[id=0..4]{
+    text data,res
+    while(true){
+        dataBase.next(id)
+        // Obtiene el resultado
+        dataBase.result(id, res)
+    }
+}

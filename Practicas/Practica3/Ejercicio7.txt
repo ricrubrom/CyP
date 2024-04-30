@@ -1,0 +1,55 @@
+Process runner[id:0..C-1]{
+    marathon.start();
+    // Runs the marathon
+    marathon.getWater();
+    // Drinks water
+}
+
+Process worker{
+    while (true){
+        marathon.fillWater();
+        Fill();
+        marathon.resumeWater();
+    }
+}
+
+Monitor marathon(){
+    int runners=0, bottles=20;
+    bool free=true;  
+    cond notReady, waterQueue, empty, current;
+
+    Procedure start(){
+        if (++runners<C) wait(notReady);
+        else {
+            runners=0;
+            signal_all(notReady);
+        }
+    }
+
+    Procedure getWater(){
+        if (!free) {
+            runners++;
+            wait(waterQueue);
+        }
+        else free=false;
+        if (bottles==0) {
+            signal(empty);
+            wait(current);
+        }
+        bottles--;
+        if(runners>0){
+            runners--;
+            signal(waterQueue);
+        }
+        else free=true;
+    }
+
+    Procedure fillWater(){
+        if (bottles>0) wait(empty);
+    }
+
+    Procedure resumeWater(){
+        bottles=20;
+        signal(current);
+    }
+}

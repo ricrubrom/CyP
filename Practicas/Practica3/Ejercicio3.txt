@@ -1,0 +1,41 @@
+
+Process client[id:0..N-1]{
+    text receipt;
+    list materialsList= ...;
+    manager.giveList(materialsList, receipt);
+}
+
+Process worker{
+    int completed=0, id;
+    list materialsList;
+    text receipt;
+    while (completed<N){
+        manager.nextClient(id, materialsList);
+        receipt= makeReceipt(materialsList)'
+        manager.giveReceipt(id, receipt);
+        completed++;
+    }   
+}
+
+Monitor manager{
+    cond waiting, work, waitReceipt, waitList;
+    queue clients;
+    text R[N];
+
+    Procedure giveList(materialsList: in list, receipt: out text){
+        push(clients, id, materialsList)
+        signal(work);
+        wait(waiting);
+        receipt=R[id];
+    }
+
+    Procedure nextClient(id: out int; materialsList: out list){
+        if (empty(clients)) wait(work);
+        pop(clients, id, materialsList)
+    }
+
+    Procedure giveReceipt(id:in int; receipt: in text){
+        R[id]=receipt;
+        signal(waiting);
+    }
+}

@@ -1,0 +1,189 @@
+A)
+
+Process client[id:0..N-1]{
+    file fileToPrint;
+    paper printedPaper;
+    printer.use(fileToPrint, printedPaper);
+}
+
+Monitor printer{
+
+    Procedure use(fileToPrint: in file; printedPaper: out paper){
+        printedPaper=print(fileToPrint);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+B)
+
+Process client[id:0..N-1]{
+    file fileToPrint;
+    paper printedPaper;
+    printer.use();
+    printedPaper = print(fileToPrint);
+    printer.release()
+}
+
+Monitor printer{
+    bool free=true;
+    cond waiting;
+
+    Procedure use(){
+        if (!free) {
+            wait(waiting);
+        }
+        else free=false;
+    }
+
+    Procedure release(){
+        if(!empty(clients)){
+            signal(waiting);
+        }
+        else free=true;
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+C)
+
+Process client[id:0..N-1]{
+    int age;
+    file fileToPrint;
+    paper printedPaper;
+    printer.use(id, age);
+    printedPaper = print(fileToPrint);
+    printer.release()
+}
+
+Monitor printer{
+    bool free=true;
+    sortedQueue clients;
+    cond waiting[N];
+
+    Procedure use(id: in int, age: in int){
+        if (!free) {
+            push(clients, id, age);
+            wait(waiting[id]);
+        }
+        else free=false;
+    }
+
+    Procedure release(){
+        if(!empty(clients)){
+            pop(clients, auxid);
+            signal(waiting[auxId]);
+        }
+        else free=true;
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+D)
+
+Process client[id:0..N-1]{
+    file fileToPrint;
+    paper printedPaper;
+    printer.use(fileToPrint, printedPaper);
+}
+
+Monitor printer{
+    int current=0
+    cond waiting[N];
+
+    Procedure use(id: in int; fileToPrint: in file; printedPaper: out paper){
+        if (id != current) wait(waiting[id]);
+        printedPaper=print(fileToPrint);
+        current++;
+        signal(waiting[current]);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+E)
+
+Process client[id:0..N-1]{
+    file fileToPrint;
+    paper printedPaper;
+    printer.use(fileToPrint, printedPaper);
+}
+
+Process worker{
+    while(true){
+        printer.next();
+    }
+}
+
+Monitor printer{
+    int waitList=0;
+    cond waiting[N], finished;
+
+    Procedure use(fileToPrint: in file; printedPaper: out paper){
+        waitList++;
+        signal(work);
+        wait(waiting);
+        waitList--;
+        printedPaper = print(fileToPrint); 
+        signal(finished);
+    }
+
+    Procedure next(){
+        if(waitList == 0) wait(work);
+        signal(waiting);
+        wait(finished);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+F)
+
+Process client[id:0..N-1]
+{
+    service.waitCall(id, num);
+    print(num);
+    service.free(num);
+}
+
+Process worker
+{   
+    int completed = 0;
+    while(completed < N){
+        service.enable();
+        completed++;
+    }
+}
+
+Monitor service {
+    cond cvWorker, cvFree, waiting[N];
+    queue waitingQueue, printers = 1..10;
+    int assigned[N];
+
+    Procedure waitCall(id: in int; num: out int)
+    {
+        push(waitingQueue, id);
+        signal(cvWorker);
+        wait(waiting[id]);
+        num = assigned[id];
+    }
+
+
+    Procedure enable()
+    {
+        if(empty(waitingQueue)) {wait(cvWorker);}
+        int id = pop(waitingQueue, id);
+        if(empty(printers)) {wait(cvFree);}
+        assigned[id] = pop(printers);
+        signal(waiting[id]);
+    }
+
+    
+    Procedure free(num: in int)
+    {   
+        push(printers, num);
+        signal(cvFree);
+    }
+}

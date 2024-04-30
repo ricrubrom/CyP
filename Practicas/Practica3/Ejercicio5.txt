@@ -1,0 +1,64 @@
+// Working under the asumption that the function giveNumber cannot give the same number more than twice
+
+Process student[id:0..49]{
+    int group;
+    manager.getGroup(id, group)
+    // Works
+    double grade;
+    manager.returnWorkSheet(group, workSheet, grade)
+}
+
+Process JTP{
+    int id, group;
+    for (i=0;i<50;i++){
+        manager.nextStudent(id);
+        group=giveNumber();
+        manager.giveGroup(id, group);
+    }
+    manager.returnGrades();
+}
+
+Monitor manager{
+    int curGrade=25;
+    int assistance=0;
+    queue students, finished;
+    cond cvStudents[50], notFull, cvFinished[25], cvWaitFinish;
+    int groups[50], grades[25], finishedGroups[25]=([25] 0);
+
+    Procedure nextStudent(id: out int){
+        if assistance<50 wait(notFull);
+        pop(students, id);
+    }
+
+    Procedure giveGroup(id:in int; group: in int){
+        groups[id]=group;
+        signal(cvStudents[id]);
+    }
+
+    Procedure getGroup(id: in int; group:out int){
+        push(students, id);
+        if (++assistance==50) signal(notFull);
+        wait(cvStudents[id])
+        group=groups[id];
+    }
+
+    Procedure returnWorkSheet(group: in int; workSheet:in text; grade: out double){
+        push(finished, (group, workSheet));
+        signal(cvWaitFinish);
+        wait(cvFinished[group]);
+        grade=grades[group];
+    }
+    
+    Procedure returnGrades(){
+        text workSheet;
+        int group;
+        while(curGrade>0){
+            if(empty(finished)) wait(cvWaitFinish);
+            pop(finished, (group, workSheet));
+            if(++finishedGroups[group]==2){
+                grades[group]=curGrade--;
+                signal_all(cvFinished[group])
+            }
+        }
+    }
+}

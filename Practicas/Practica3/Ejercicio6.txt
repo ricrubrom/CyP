@@ -1,0 +1,29 @@
+Process player[id:0..19]{
+    team= ...   // The player knows the team before the game starts
+    int total=0, score;
+    game.waitTeam(team);
+    for (i=0;i<15;i++) total+=Coin();
+    game.waitScore(team, total, score);
+}
+
+Monitor game{
+    int arrived[5]=[5] 0;
+    int scores[5]=[5] 0;
+    cond notFull[5];
+
+    Procedure waitTeam(team:in int){
+        if (++arrived[team]<4) wait(notFull[team]);
+        else {
+            arrived[team]=0;
+            signal_all(notFull[team]);
+        }
+    }
+
+    Procedure.waitScore(team:in int; total: in int; score: out int){
+        scores[team]+=total;
+        if (++arrived[team]<4) wait(notFull[team]);
+        else signal_all(notFull[team]);
+        score=scores[team];
+    }
+
+}
