@@ -1,0 +1,29 @@
+Process cliente[id:0..N-1]{
+    file archivo=...;
+    papel impresion;
+    impresora.usar();
+    impresion=Imprimir(archivo);
+    impresora.liberar();
+}
+
+Monitor impresora{
+    bool libre=true;
+    cond espera;
+    int cantEspera=0;
+
+    Procedure usar(){
+        if(!libre) {
+            cantEspera++;
+            wait(espera);
+        }
+        else libre=false;
+    }
+
+    Procedure liberar(){
+        if(cantEspera>0){
+            cantEspera--;
+            signal(espera);
+        }
+        else libre=true;
+    }
+}

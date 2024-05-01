@@ -1,0 +1,25 @@
+bool finalizado[C]=[C] false;
+cola c;
+bool numRecibido=false;
+int num;
+
+Process cliente[id:0..C-1]{
+    int n;
+    <push(c, id)>
+    <await (finalizado[id])>
+    <await numRecibido; n=num; numRecibido=false>;
+    print(id, n);
+}
+
+Process empleado{
+    int actual, total=0;
+    while (total<C){
+        <await (!empty(c)); pop(c, actual)>
+        // Lo atiende
+        <finalizado[actual]=true>
+        <await !numRecibido;
+        num=random();
+        numRecibido=true>
+        total++;
+    }
+}
