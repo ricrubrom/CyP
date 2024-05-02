@@ -1,6 +1,10 @@
 1 5 15
 Tema 1)
 
+// Resolver con SENTENCIAS AWAIT (<> y/o <await B; S>) el siguiente problema. Se debe calcular el
+// valor promedio de un vector de 1000 números por medio de 10 procesos. Al finalizar todos los procesos
+// deben guardar en una variable local el resultado final. Nota: maximizar la concurrencia.
+
 int arr[1000]= ... ;
 double promedio=0;
 int terminados=0;
@@ -19,6 +23,11 @@ Process calcular[id:0..9]{
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 2)
 
+// Resolver con SENTENCIAS AWAIT (<> y/o <await B; S>) el siguiente problema. Se debe realizar el
+// producto escalar de dos vectores A y B de 1000 números (como se muestra en la fórmula r=sum(A[i]*B[i], 0, 999))
+// utilizando 10 procesos. Al terminar todos los procesos deben guardarse en una variable local el resultado final r. 
+// Nota: maximizar concurrencia.
+
 int A[1000]= ... ;
 int B[1000]= ... ;
 int prod=0;
@@ -35,6 +44,13 @@ Process multiplicador[id:0..9]{
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 3)
+
+// Resolver con SENTENCIAS AWAIT (<> y/o <await B; S>) el siguiente problema. En una playa hay 5
+// personas que deben juntar 15 monedas cada una y obtener el TOTAL de dinero juntado entre todos (la
+// suma del valor de las 75 monedas que pueden ser de 1, 2 o 5 pesos). Al terminar todos los procesos deben
+// guardarse en una variable local el TOTAL. Nota: maximizar la concurrencia. Suponga que existe una
+// función Moneda() llamada por las personas que simula encontrar UNA moneda y retorna el valor de la
+// misma. Cada persona trabaja sobre una zona diferente de la playa.
 
 int total=0;
 
