@@ -1,0 +1,46 @@
+Process controlador[id:0..14]{
+    double temp;
+    int accion;
+    while(true){
+        temp=medir();
+        central.pedirAccion(id, temp, accion);
+        actuar(accion);
+        delay(retardo);
+    }
+}
+
+Process central{
+    int id, accion;
+    double temp;
+    while(true){
+        gestor.siguiente(id, temp);
+        accion=determinar(temp);
+        gestor.devolver(id, temp);
+    }
+}
+
+
+        accion=determinar(temp);
+Monitor gestor{
+    cond espera, cvCentral, esperandoRes;
+    int acciones[15];
+
+    Procedure pedirAccion(id: in int; temp: in double; accion:out int){
+        push(colaE, (id, temp));
+        signal(cvCentral);
+        wait(esperandoRes);
+        accion=acciones[id];
+    }    
+    
+    Procedure siguiente(id: out int; temp: out double){
+        if(empty(colaE)){
+            wait(cvCentral);
+        }
+        pop(colaE, (id, temp));
+    }
+
+    Procedure devolver(id: in int; accion: in int){
+        acciones[id] = accion;
+        signal(esperandoRes);
+    }
+}

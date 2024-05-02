@@ -1,0 +1,33 @@
+int E= ... ;
+int atendidos=0;
+cola pedidos;
+bool tickets[P];
+int mutexVariables=1, mutexCola=1;
+
+Process personas [id:0..P-1]{
+    bool ticket;
+    <await (mutexCola=1); mutexCola-- >
+    push(pedidos, idCliente);
+    mutexCola++
+    <await (tickets[id] | E=0); mutexVariables-- >
+    ticket=tickets[id];
+    mutexVariables++
+}
+
+Process boleterias[id:0..4]{
+    int idCliente;
+    while(E!=0){
+        <await (!empty(pedidos) | E=0)>
+        <await (mutexCola=1); mutexCola-- >
+        pop(pedidos, idCliente);
+        mutexCola++
+        <await mutexVariables=1; mutexVariables-- >;
+        if E>0{
+            E--;
+            atendidos++;
+            tickets[idCliente]=true
+        };
+        mutexVariables++
+    }
+}
+

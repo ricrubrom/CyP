@@ -1,0 +1,33 @@
+1 5 15
+Tema 1)
+sem espera[30]=[30] 0
+sem noPaciente=0;
+
+Process paciente[id:0..29]{
+    int turno ... ; //El paciente ya lo conoce;
+    P(espera[turno]);
+    V(noPaciente);
+    // Entrega libreta
+    P(finalizado);
+}
+
+Process enfermera{
+    for(i=0;i<30;i++){
+        V(espera[i]);
+        P(noPaciente);
+        Vacunar();
+        V(finalizado);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tema 2)
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tema 3)
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

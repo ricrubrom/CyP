@@ -1,0 +1,89 @@
+1 5 15
+Tema 1)
+
+Process jugador[id:0..79]{
+    int grupo= ... ; //El jugador ya conoce su grupo
+    int cancha;
+    maquina.acceso(grupo, cancha)
+    cancha[cancha].jugar();
+}
+
+Process maquina{
+    int grupo;
+    int canchas[8]=-1;
+    int cancha=1;
+    while(true){
+        gestor.proximo(grupo);
+        if (canchas[grupo]==-1) {
+            canchas[grupo]=cancha;
+            cancha= (cancha) mod 8 + 1;
+        }
+        else cancha=cancha[grupo];
+        gestor.entregarCancha(grupo, cancha);
+    }
+}
+
+Process partido[id:1..8]{
+    cancha.comenzar();
+    delay(50);
+    cancha.finalizar();
+}
+
+Monitor cancha[id:1..8]{
+    int presentes=0;
+
+    Procedure jugar{
+        presentes++;
+        if(presentes<10){
+            wait(noPresentes);
+        }
+        else signal_all(noPresentes);
+        wait(finalizarPartido);
+    }
+
+    Procedure comenzar(){
+        if(presentes<10) wait(noPresentes)
+    }
+
+    Procedure finalizar(){
+        signal_all(finalizarPartido);
+    }
+}
+
+Monitor gestor{
+    int canchas[8];
+    queue cola
+    cond espera, cvMaquina;
+
+    Procedure acceso(grupo:in int; cancha:out int){
+        if(canchas[grupo]==-1){
+            push(cola, grupo);
+            signal(cvMaquina);
+            wait(espera);
+        }
+        cancha=canchas[grupo];
+
+    }
+
+    Procedure proximo(group:out int){
+        if(empty(cola)) wait(cvMaquina);
+        pop(cola, group);
+    }
+
+    Procedure entregarCancha(grupo:in int; cancha:in int){
+        canchas[grupo]=cancha;
+        signal(espera);
+    }
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tema 2)
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tema 3)
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

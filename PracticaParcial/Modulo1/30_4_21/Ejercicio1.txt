@@ -1,0 +1,29 @@
+1 5 15
+Tema 1)
+
+int arr[1000]= ... ;
+double promedio=0;
+int terminados=0;
+
+Process calcular[id:0..9]{
+    int sum=0;
+    for (i=0;i<100;i++){
+        sum+=arr[10*i+id];
+    }
+    <promedio+=promedio + sum/100>;
+    <terminados+=1>;
+    <await (terminados==10)>;
+    double promedioLocal=prom;
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tema 2)
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tema 3)
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

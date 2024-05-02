@@ -1,0 +1,28 @@
+sem paso=1;
+bool libre=true;
+cola espera;
+sem mutex=1;
+sem siguiente[N]=[N] 0
+
+Process auto[id:0..N-1]{
+    P(mutex);
+    if (!libre){
+        push(espera, id);
+        V(mutex);
+        P(siguiente[id]);
+    } else {
+        libre=false;
+        V(mutex);
+    }
+
+    pasar();
+    int idAux;
+    P(mutex);
+    if(!empty(espera)){
+        pop(espera, idAux);
+        V(siguiente[idAux]);
+    } else {
+        libre=true;
+    }
+    V(mutex);
+}
