@@ -19,11 +19,33 @@ Process calcular[id:0..9]{
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 2)
 
+int A[1000]= ... ;
+int B[1000]= ... ;
+int prod=0;
 
+Process multiplicador[id:0..9]{
+    int temp=0;
+    int total;
+    for (int i=id;i<1000;i+=10){
+        temp+=A[i]*B[i];
+    }
+    <prod+=temp>;
+    total=prod;
+}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 3)
 
+int total=0;
 
+Process persona[id:0..4]{
+    int suma=0;
+    int totalLocal;
+    for(int i=0;i<15;i++){
+        suma+=Moneda();
+    }
+    <total+=suma>;
+    totalLocal=total;
+}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

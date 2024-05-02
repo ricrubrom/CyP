@@ -23,11 +23,100 @@ Process enfermera{
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 2)
 
+queue cola[3];
+sem espera[150]=[150] 0;
+sem sEnfermeras[3]=[3] 0;
+sem mutexCola[3]=[3] 1;
+sem llegada[3]=[3] 0;
+sem finalizado[3]=[3] 0;
+sem seFue[3]=[3] 0;
 
+Process pasajero[id:0..149]{
+    int minCola;
+    min(cola, minCola);  //Funcion que devuelve la cola   con menos personas
+
+    P(mutexCola[minCola]);
+    push(cola[minCola], id);
+    V(mutexCola[minCola]);
+
+    V(sEnfermeras[minCola]);
+
+    P(espera[id]);
+
+    V(llegada[minCola]);
+    P(finalizado[minCola]);
+
+    V(seFue[minCola]);
+}
+
+Process enfermera[id:0..2]{
+    int idAux;
+    while(true){
+        P(sEnfermeras[id]);
+
+        P(mutexCola[id]);
+        pop(cola[id], idAux);
+        V(mutexCola[id]);
+
+        V(espera[idAux]);
+
+        P(llegada[id]);
+        Hisopar();
+        V(finalizado[id]);
+
+        P(seFue[id]);
+    }
+}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 3)
+sem mutexCola=1;
+sem mutexVariable=1;
+sem espera[200]=[200] 0;
+sem semEmpleado[8]=[8] 0;
+sem finalizado[8]=[8] 0
+sem seFue[8]=[8] 0
+queue cola[8];
+int atendidos=0;
 
+Process paciente[id:0..199]{
+    int puesto= ... // ya lo conoce;
+    P(mutexCola);
+    push(cola[puesto], id);
+    V(mutexCola);
 
+    V(semEmpleado[puesto]);
+    P(espera[id])
+
+    P(finalizado[puesto]);
+
+    V(seFue[puesto]);
+}
+
+Process empleado[id:0..7]{
+    int idAux;
+    while(atendidos<200){
+        P(semEmpleado[id]);
+        if (atendidos==200) break;
+
+        P(mutexCola);
+        pop(cola[id], idAux);
+        V(mutexCola);
+
+        V(espera[idAux]);
+        
+        Vacunar()
+
+        V(finalizado[id]);
+        P(seFue[id]);
+
+        P(mutexVariable);
+        atendidos++;
+        V(mutexVariable);
+        if(atendidos==200){
+            for(int i=0; i<8; i++) V(semEmpleado[i]);
+        }
+    }
+}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

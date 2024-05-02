@@ -79,11 +79,142 @@ Monitor gestor{
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 2)
 
+Process jugadores[id:0..19]{
+    int canchaElegida;
+    selectorCancha.elegirCancha(id, canchaElegida);
+    cancha[canchaElegida].jugar();
+}
 
+Process partido[id:0..1]{
+    cancha[id].comenzar();
+    delay(40);
+    cancha[id].finalizar();
+}
+
+Process gestor{
+    int total=0;
+    int cancha=0;
+    while(total<20){
+        selectorCancha.siguiente(id);
+        cancha=(cancha + 1) mod 2;
+        selectorCancha.devolverCancha(id, cancha);
+        total++;
+    }
+}
+
+Monitor selectorCancha{
+    int canchas[20];
+    int esperando=0;
+    queue cola;
+    cond cvEspera, cvSiguiente;
+
+    Procedure elegirCancha(id:in int; cancha:out int){
+        esperando++;
+        push(cola, id);
+        signal(cvSiguiente);
+        wait(cvEspera);
+        cancha=canchas[id]
+    }
+
+    Procedure siguiente(id:out int){
+        if(esperando==0) wait(cvSiguiente);
+        pop(cola, id);
+    }
+
+    Procedure devolverCancha(id:in int; cancha:in int){
+        canchas[id]=cancha;
+        signal(cvEspera);
+        esperando--;
+    }
+}
+
+Monitor cancha[id:0..1]{
+    cond espera, cvPartido, jugando;
+    int presentes=0;
+    Procedure jugar(){
+        presentes++;
+        if(presentes<10) wait(espera);
+        else {signal_all(espera); signal(cvPartido)};
+        wait(jugando);
+    }
+
+    Procedure comenzar(){
+        if (presentes<10) wait(cvPartido);
+    }
+
+    Procedure finalizar(){
+        signal_all(jugando);
+    }
+}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tema 3)
 
+Process jugadores[id:0..39]{
+    int idCancha;
+    gestor.pedirCancha(id, idCancha)
+    cancha[idCancha].jugar();
+}
 
+Process partido[id:0..9]{
+    cancha.comenzar();
+    delay(60);
+    cancha.finalizar();
+}
+
+Process robot{
+    int cancha=0;
+    int aux=0;
+    int id;
+    while(true){
+        gestor.siguiente(id);
+        aux++;
+        cancha=aux div 4;
+        gestor.devolverCancha(id, cancha);
+    }
+}
+
+Monitor gestor{
+    
+    Procedure pedirCancha(id:in int; idCancha:out int){
+        push(cola, id);
+        signal(cvRobot);
+        wait(espera[id]);
+        idCancha=canchas[id];
+    }
+
+    Procedure siguiente(id:out int){
+        if(empty(cola)) wait(cvRobot);
+        pop(cola, id);
+    }
+
+    Procedure devolverCancha(id:in int; idCancha:in int){
+        canchas[id]=idCancha;
+        signal(espera[id]);
+    }
+}
+
+Monitor cancha[id:0..9]{
+    cond noPresentes, cvPartido, jugando;
+    int presentes=0;
+
+    Procedure jugar(){
+        presentes++;
+        if(presentes<4) wait(noPresentes);
+        else {
+            signal_all(noPresentes);
+            signal(cvPartido);
+        }
+        wait(jugando);
+    }
+
+    Procedure comenzar(){
+        if (presentes<4) wait(cvPartido);
+    }
+
+    Procedure finalizar(){
+        signal_all(jugando);
+    }
+}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
