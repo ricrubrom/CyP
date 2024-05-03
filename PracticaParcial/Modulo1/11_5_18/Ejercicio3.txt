@@ -1,0 +1,25 @@
+Process persona[id:0..N]{
+    telefono.solicitar();
+    llamar();
+    telefono.liberar();
+}
+
+Monitor telefono{
+    bool libre=true;
+    int esperando=0;
+    cond espera;
+
+    Procedure solicitar(){
+        if (!libre){
+            esperando++;
+            wait(espera);
+        } else libre=false;
+    }
+
+    Procedure liberar(){
+        if (esperando>0){
+            signal(espera);
+            esperando--;
+        } else libre=true;
+    }
+}

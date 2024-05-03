@@ -1,0 +1,25 @@
+int presentes=0;
+int puesto=1;
+sem espera=0, mutexVariables=1;
+
+
+Process autos[id:0..14]{
+    int posicion;
+    P(mutexVariables);
+    presentes++;
+    if(presentes<15){
+        V(mutexVariables);
+        P(espera);
+    }
+    else {
+        V(mutexVariables);
+        for(int i=1;i<15;i++) {V(espera);}
+    }
+
+    carrera();
+
+    P(mutexVariables);
+    posicion=puesto;
+    puesto++;
+    V(mutexVariables);
+}

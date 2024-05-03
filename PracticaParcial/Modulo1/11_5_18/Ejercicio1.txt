@@ -1,0 +1,10 @@
+int arr[N]= ... ;
+int min=valorAlto;
+
+Process proceso[id:0..9]{
+    int minLocal=valorAlto;
+    for(int i=id; i<N; i+=10){
+        if (arr[i]<minLocal) minLocal=arr[i];
+    }
+    < if (minLocal<min) {min=minLocal} >
+}
