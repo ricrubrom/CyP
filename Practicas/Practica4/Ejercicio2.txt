@@ -1,0 +1,39 @@
+type eleccion=enum(usar, liberar);
+chan pedido(int id, eleccion operacion);
+chan asignacion[P](int idCaja);
+chan cajas[5](int idPersona);
+chan resultado[P](int monto);
+
+Process persona[id:0..P-1]{
+    int idCaja, monto;
+    send pedido(id, eleccion.usar);
+    receive asignacion[id](idCaja);
+    send cajas[idCaja](id);
+    receive resultado[id](monto);
+    send pedido(idCaja, eleccion.liberar);
+}
+
+Process caja[id:0..4]{
+    int idAux;
+    while (true){
+        receive cajas[id](idAux);
+        //Opera
+        send resultado[idAux](monto);
+    }
+}
+
+Process gestor{
+    eleccion operacion;
+    int idAux, idCaja;
+    int colas[5]=[5] 0;
+    while(true){
+        receive pedido(idAux, operacion);
+        if(operacion=eleccion.usar){
+            minCaja(colas, idCaja); // Funcion que devuelve en idCaja la id de la caja con menor cola;
+            colas[idCaja]++;
+            send asignacion[idAux](idCaja);
+        } else if (operacion=eleccion.liberar){
+            colas[idAux]--;
+        }
+    }
+}

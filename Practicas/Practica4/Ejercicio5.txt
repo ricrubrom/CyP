@@ -1,0 +1,40 @@
+Process usuario[id:0..N-1]{
+    txt papelImpreso;
+    doc documento;
+    while(true){
+        //Trabajan
+        send imprimirUsuario(id, documento);
+        send aviso(true);
+        receive finalizadoUsuario[id](papelImpreso);
+    }
+}
+
+Process director{
+    txt papelImpreso;
+    doc documento;
+    while(true){
+        //Trabajan
+        send imprimirDirector(documento);
+        send aviso(true);
+        receive finalizadoDirector(papelImpreso);
+    }
+}
+
+Process impresora[id:0..2]{
+    int idAux;
+    txt papelImpreso;
+    doc auxDoc;
+    bool ok;
+    while (true){
+        receive aviso(ok);
+        if(not empty(imprimirDirector)){
+            receive imprimirDirector(auxDoc);
+            papelImpreso=imprimir(auxDoc);
+            send finalizadoDirector(papelImpreso);
+        } else if(not empty(imprimirUsuario)){
+            receive imprimirUsuario(idAux, auxDoc);
+            papelImpreso=imprimir(auxDoc);
+            send finalizadoUsuario[idAux](papelImpreso);
+        }
+    }
+}

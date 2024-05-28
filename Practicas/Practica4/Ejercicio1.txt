@@ -1,0 +1,17 @@
+chan espera(int idPersona);
+chan atendido[N](bool finalizado);
+
+Process persona[id:0..N-1]{
+    bool finalizado=false;
+    send espera(id);
+    receive atendido[id](finalizado);
+}
+
+Process empleado[id:0..1]{
+    int idAux;
+    while (true){
+        receive espera(idAux);
+        // Atiende;
+        send atendido[idAux](true);
+    }
+}

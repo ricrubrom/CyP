@@ -1,0 +1,34 @@
+chan pedido(int id, txt orden);
+chan espera[C](food comida);
+chan cocina(int id, txt orden);
+
+
+Process clientes[id:0..C-1]{
+    txt orden;
+    food comida;
+    send pedido(id, orden);
+    receive espera[id](comida);
+}
+
+Process cocinero[id:0..1]{
+    txt orden;
+    int idAux;
+    while(true){
+        receive cocina(idAux, orden);
+        cocinar(orden, comida);
+        send espera[idAux](comida);
+    }
+}
+
+Process vendedor[id:0..2]{
+    txt orden;
+    int idAux;
+    while(true){
+        if (empty(pedido)){
+            randDelay(1,3); //Repone bebidas en la heladera
+        } else {
+            receive pedido(idAux, orden);
+            send cocina(idAux, orden);
+        }
+    }
+}

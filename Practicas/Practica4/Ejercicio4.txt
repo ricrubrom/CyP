@@ -1,0 +1,49 @@
+type eleccion=enum(usar, liberar);
+chan señal(bool ok);
+chan cobro(int id);
+chan finalizados[N](bool ok);
+chan cola_cabinas(int id, eleccion operacion);
+chan asignacion[N](int cabina);
+
+Process cliente[id:0..N-1]{
+    int idCabina;
+    send cola_cabinas(id, eleccion.usar);
+    send señal(true);
+    receive asignacion[id](idCabina);
+    usarCabina(idCabina);
+    send cola_cabinas(idCabina, eleccion.liberar);
+    send señal(true);
+    send cobro(id);
+    send señal(true);
+    bool ok;
+    receive finalizados[id](ok);
+}
+
+Process empleado{
+    queue pendiente, cabinas=[1..10];
+    while(true){
+        receive señal(ok);
+        if (not empty(cobro)){
+            receive cobro(idAux);
+            Cobrar(idAux);
+            send finalizados[idAux](true);
+        } else if(not empty(cola_cabinas)){
+            receive cola_cabinas(idAux, operacion);
+            if(operacion=eleccion.usar){
+                if(not empty(cabinas)){
+                    cabinaAsignada=pop(cabinas);
+                    send asignacion[idAux](cabinaAsignada);
+                } else {
+                    push(pendiente, idAux);
+                }
+            } else if(operacion=eleccion.liberar){
+                if(not empty(pendiente)){
+                    idPendiente=pop(pendiente);
+                    send asignacion[idPendiente](idAux);
+                } else {
+                    push(cabinas, idAux);
+                }
+            }
+        }
+    }
+}
