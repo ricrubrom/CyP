@@ -1,0 +1,47 @@
+Process alumno[id:0..P-1]{
+    txt parcial;
+    float nota;
+    admin!arrivo();
+    admin?arrancar();
+    // Hacen el parcial;
+    admin!finalizado(id, parcial);
+    admin?nota(nota);
+}
+
+Process admin{
+    int i, idAl, cant=0, cantCorreg=0, idProf;
+    queue cola;
+    float nota;
+    txt parcial;
+
+    for (i:=0; i<P; i++) alumno[*]?arrivo();
+    for (i:=0; i<P; i++) alumno[i]!comenzar();
+
+    do{
+        (cant<P): alumno?finalizado(idAl, parcial){
+            push(cola, idAl, parcial);
+            cant++;
+        }
+        (!empty(cola)): profesor[*]?pedido(idProf){
+            profesor[idProf]!corregir(pop(cola));
+        }
+        (cantCorreg<P): profesor[*]?correccion(idAl, nota){
+            alumno[idAl]!nota(nota);
+            cantCorreg++;
+        }
+    }
+
+}
+
+Process profesor[id:0..2]{
+    float nota;
+    int idAl;
+    txt parcial;
+
+    while(true){
+        admin!pedido(id);
+        admin?corregir(idAl, parcial);
+        corregir(parcial, nota);
+        admin!correccion(idAl, nota);
+    }
+}

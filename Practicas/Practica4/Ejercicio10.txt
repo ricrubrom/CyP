@@ -1,0 +1,28 @@
+Process espectador[id:0..E-1]{
+    maquina!usar(id);
+    maquina?turno();
+    //Usa la maquina;
+    maquina!finalizado();
+}
+
+Process maquina{
+    bool libre=true;
+    int idE;
+    queue cola;
+
+    do{
+        (libre): espectador[*]?usar(idE){
+            libre=false;
+            espectador[idE]!turno();
+        }
+        (!libre): espectador[*]?usar(idE){
+            push(cola, idE);
+        }
+        (empty(cola)): espectador[*]?finalizado(){
+            libre=true;
+        }
+        (!empty(cola)): espectador[*]?finalizado(){
+            espectador[pop(cola)]!turno();
+        }
+    }
+}

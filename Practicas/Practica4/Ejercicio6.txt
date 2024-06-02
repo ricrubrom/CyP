@@ -1,0 +1,46 @@
+Process empleado1{
+    muestra muestras;
+    while(true){
+        //Preparar muestras
+        admin!nuevaMuestra(muestras);
+    }
+}
+
+Process admin{
+    queue cola;
+    muestra muestras;
+
+    do {
+        empleado1?nuevaMuestra(muestras) {
+            push (cola, muestras);
+        }
+
+        (!empty(cola)): empleado2?pedido(){
+            empleado2!muestras(pop(cola));
+        }
+    }
+}
+
+Process empleado2{
+    muestra muestras;
+    res resultados;
+    while(true){
+        admin!pedido();
+        admin?muestra(muestras);
+        //Preparar set de analisis
+        empleado3!muestra(muestras);
+        empleado3?resultados(resultados);
+        archivar(resultados);
+    }
+}
+
+Process empleado3{
+    muestra muestras;
+    res resultados;
+    while(true){
+        empleado2?muestra(muestras);
+        analisis(muestras, resultados);
+        empleado2!resultados(resultados);
+    }
+
+}

@@ -1,0 +1,39 @@
+Process robot[id:0..R-1]{
+    web pagina;
+    bool posibleVirus;
+    while(true){
+        nuevaPagina(pagina);
+        prueba(pagina, posibleVirus);
+        if(posibleVirus){
+            buffer!nuevoVirus(pagina);
+        }
+    }
+}
+
+Process buffer{
+    queue cola;
+    web pagina
+
+    do {
+        robot[*]?nuevoVirus(pagina){
+            push(cola, pagina);
+        }
+        (!empty(cola)):analizador?pedido(){
+            analizador!analizar(pop(cola));
+        }
+    }
+}
+
+Process analizador{
+    web pagina;
+    bool virus;
+    list paginasInfectadas;
+    while(true){
+        buffer!pedido();
+        buffer!analizar(pagina);
+        analizar(pagina, virus);
+        if(virus){
+            push(paginasInfectadas, pagina);
+        }
+    }
+}

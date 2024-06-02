@@ -1,0 +1,28 @@
+Process persona[id:0..P-1]{
+    empleado!acceso(id);
+    empleado?espera();
+    //Utiliza simulador
+    empleado!finalizado();
+}
+
+Process empleado{
+    int idP;
+    bool libre=true;
+    queue cola;
+    do{
+        (libre): persona[*]?acceso(idP){
+            libre=false;
+            persona[idP]!espera();   
+        }
+        (!libre): persona[*]?acceso(idP){
+            push(cola, idP);
+        }
+        (!empty(cola)): persona[*]?finalizado(){
+            persona[pop(cola)]!espera();
+        }
+        (empty(cola)): persona[*]?finalizado(){
+            libre=true;
+        }
+    }
+}
+
