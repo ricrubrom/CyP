@@ -1,0 +1,48 @@
+Process competidor[id:0..N-1]{
+    challenge desafio;
+    solucion trabajo;
+    bool fallas=true;
+    organizador!llegue(id);
+    organizador?comenzar(desafio);
+    while(fallas){
+        //Realiza el desafio
+        admin!entrega(id, trabajo);
+        supervisor[*]?correcion(fallas);
+    }
+}
+
+Process supervisor[id:0..S-1]{
+    int idC;
+    solucion trabajo;
+    bool fallas;
+    while(true){
+        admin!proximoTrabajo(id);
+        admin?entregarTrabajo(idC, trabajo);
+        corregir(trabajo, fallas);
+        competidor[idC]!correcion(fallas);
+    }
+}
+
+Process admin{
+    int idC, idS;
+    solucion trabajo;
+    queue cola;
+    do{
+        competidor[*]?entrega(idC,trabajo){
+            push(cola, idC, trabajo);
+        }
+        (!empty(cola)): supervisor[*]?proximoTrabajo(idS){
+            supervisor[idS]!entregarTrabajo(pop(cola));
+        }
+    }
+}
+
+Process organizador{
+    challenge desafio;
+    int idC;
+    for (i=0; i<N; i++){
+        generarDesafio(desafio);
+        competidor[*]?llegue(idC)
+        competidor[idC]!comenzar(desafio);
+    }
+}
