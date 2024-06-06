@@ -1,0 +1,15 @@
+chan espera(id:integer);
+chan finzalido[C]();
+
+Process cliente[id:0..C-1]{
+    send espera(id);
+    receive finalizado[id]();
+} 
+
+Process empleado[id:0..1]{
+    while(true){
+        receive espera(idC);
+        //Atiende
+        send finalizado[idP]();
+    }
+}

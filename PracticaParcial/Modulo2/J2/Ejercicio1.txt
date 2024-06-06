@@ -1,0 +1,37 @@
+chan prioridad(int id, list boletas, float dinero);
+chan menor5(int id, list boletas, float dinero);
+chan pago(int id, list boletas, float dinero);
+chan finalizado[p](float vuelto, list recibos);
+chan señal();
+
+Procedure persona[id:0..P-1]{
+    list recibos, boletas=...;
+    float vuelto, dinero=...;
+    if(soyEmbarazada()){
+        send prioridad(id, boletas, dinero);
+    } else if (len(boletas)<5){
+        send menor5(id, boletas, dinero);
+    } else{
+        send pago(id, boletas, dinero);
+    }
+    send señal();
+    receive finalizado[id](vuelto, recibos);
+}
+
+Procedure caja{
+    int idP;
+    float dinero, vuelto;
+    list boletas, recibos;
+    while(true){
+        receive señal();
+        if(!empty(prioridad)){
+            receive prioridad(idP, boletas, dinero);
+        } else if(!empty(menor5)){
+            receive menor5(idP, boletas, dinero);
+        } else{
+            receive pago(idP, boletas, dinero);
+        }
+        procesarPago(boletas, dinero, vuelto, recibos);
+        send finalizado[idP](vuelto,recibos);
+    }
+}

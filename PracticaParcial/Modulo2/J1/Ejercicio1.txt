@@ -1,0 +1,28 @@
+Process persona[id:0..P-1]{
+    terminal!solicitar(id);
+    terminal?turno();
+    //Usa la terminal
+    terminal!liberar();
+}
+
+Process terminal{
+    int idP;
+    queue cola;
+    bool libre=true;
+    do{
+        libre: persona[*]?solicitar(idP){
+            libre=false;
+            persona[idP]!turno();
+        }
+        !libre: persona[*]?solicitar(idP){
+            push(cola, idP);
+        }
+        empty(cola): persona[*]?liberar(){
+            libre=true;
+        }
+        !empty(cola): persona[*]?liberar(){
+            pop(cola, idP);
+            persona[idP]!turno();
+        }
+    }
+}

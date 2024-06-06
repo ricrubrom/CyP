@@ -1,0 +1,39 @@
+Process empleado{
+    package paquete;
+    queue colaN, colaS;
+    do{
+        cliente[*]?nuevoPedido(direccion, paquete){  //Supongo que hay un proceso mas cliente que deja los pedidos
+            if(direccion='Norte'){
+                push(colaN, paquete);
+            } else{
+                push(colaS, paquete);
+            }
+        }
+        !empty(colaN): camion[0]?carga(){
+            while(!empty(colaN)){
+                camion[0]!cargar(pop(colaN));
+            }
+            camion[0]!cargar(NULL);
+        }
+        !empty(colaS): camion[1]?carga(){
+            while(!empty(colaS)){
+                camion[1]!cargar(pop(colaS));
+            }
+            camion[1]!cargar(NULL);
+        }
+    }
+}
+
+Process camion[id:0..1]{
+    package paquete;
+    while(true){
+        //Vuelven a la oficina
+        camion[id]!carga();
+        camion[id]?cargar(paquete);
+        while(paquete!=NULL){
+            CargarCamion(paquete);
+            camion[id]?cargar(paquete);
+        }
+        //Entregan Paquetes
+    }
+}
