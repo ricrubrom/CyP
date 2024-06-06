@@ -1,0 +1,29 @@
+chan alta(int id);
+chan baja(int id);
+chan aviso();
+chan finalizado[N]();
+
+Process persona[id:0..N-1]{
+    bool prioridad:=...;
+    if (prioridad){
+        send alta(id);
+    } else {
+        send baja(id);
+    }
+    send aviso();
+    receive finalizado[id]();
+}
+
+Process empleado{
+    int idP;
+    while(true){
+        receive aviso();
+        if(!empty(alta)){
+            receive alta(idP);
+        } else {
+            receive baja(idP);
+        }
+        atender();
+        send finalizado[idP];
+    }
+}

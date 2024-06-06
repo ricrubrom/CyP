@@ -1,11 +1,11 @@
 Procedure Ejercicio2 IS
 
-    TASK TYPE Sucursal IS
-
-    END Sucursal;
+    TASK TYPE Sucursal;
 
     TASK Central IS
-
+        ENTRY pedirProducto(prodId:OUT integer);
+        ENTRY darVentas(cant:IN integer);
+        ENTRY sigProd();
     END Central;
 
     sucursales=array(1..100) of Sucursal;

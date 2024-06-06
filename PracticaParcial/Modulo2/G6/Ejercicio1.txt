@@ -1,0 +1,52 @@
+chan espera(int id);
+chan turno[N](int idE);
+chan atencion[3](list lista);
+chan finalizado[N](float float);
+chan siguiente(int idE);
+chan trabajar(int idP);
+
+
+Process persona[id:0..N-1]{
+    int idE;
+    float presupuesto;
+    list lista=...;
+    send espera(id);
+    receive turno[id](idE);
+    send atencion[idE](lista);
+    receive finalizado[id](presupuesto);
+}
+
+Process admin{
+    int idP, idE;
+    while(true){
+        receive siguiente(idE);
+        if(!empty(espera)){
+            receive espera(idP);
+        } else {
+            idP=-1;
+        }
+        send trabajar(-1);
+    }
+}
+
+Process empleado[id:0..2]{
+    int idP;
+    list lista;
+    float presupuesto;
+    while(true){
+        if(empty(espera)){
+            limpiar();
+        } else{
+            send siguiente(id);
+            receive trabajar(idP);
+            if(idP=-1){
+                limpiar();
+            } else {
+                send turno[idP](id);
+                receive atencion[id](lista);
+                calcularPresupuesto(lista, presupuesto);
+                send finalizado[idP](presupuesto);
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+Process robot[id:0..R-1]{
+    while(true){
+        txt pagina;
+        bool posibleInfectado;
+        obtenerSitioWeb(pagina, posibleInfectado);
+        if(posibleInfectado){
+            analizador!nuevo(pagina);
+        }
+    }
+}
+
+Process analizador{
+    list paginasInfectadas;
+    while(true){
+        analizador?nuevo(pagina);
+        analizar(pagina, virus);
+        if(virus){
+            push(paginasInfectadas, pagina);
+        }
+    }
+}

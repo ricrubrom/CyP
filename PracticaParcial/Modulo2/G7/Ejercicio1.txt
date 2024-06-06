@@ -1,0 +1,56 @@
+chan nuevaSolicitud(int id, txt solicitud);
+chan aviso();
+chan finalizado[N](txt respuesta);
+chan peticion();
+chan entregarSolicitud(int id, txt solicitud);
+
+Process maquina[id:0..N-1]{
+    txt respuesta, solicitud;
+    while(true){
+        generarSolicitud(solicitud);
+        send nuevaSolicitud(id, solicitud);
+        send aviso();
+        receive finalizado[id](respuesta);
+    }
+}
+
+Process admin{
+    int idM;
+    txt solicitud;
+    sortedQueue cola;
+    while(true){
+        receive aviso();
+        if{
+            (!empty(peticion)){ 
+                receive peticion()
+                if(!empty(cola)){
+                    (idM, solicitud):=pop(cola);
+                } else {
+                    idM:=-1;
+                    solicitud:='xxx';
+                }
+                send entregarSolicitud(idM, solicitud);
+            }
+            (!empty(nuevaSolicitud)){
+                receive nuevaSolicitud(idM, solicitud)
+                push(cola, idM, solicitud);
+            }
+        }
+    }
+}
+
+Process servidor{
+    int idM;
+    txt solicitud, respuesta;
+    while(true){
+        send peticion();
+        send aviso();
+        receive entregarSolicitud(idM, solicitud);
+        if(idM=-1){
+            limpiar();
+        } else{
+            atender(solicitud, respuesta);
+            send finalizado[idM](respuesta);
+        }
+    }
+}

@@ -78,9 +78,7 @@ Procedure Ejercicio4 IS
                 Medico.atencion();
                     atendido:=True;
                 OR DELAY 300
-                    NULL;
-            ELSE
-                DELAY 600;
+                    DELAY 600;
             END SELECT;
             i:=i+1;
         END LOOP;

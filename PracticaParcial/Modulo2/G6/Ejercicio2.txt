@@ -1,0 +1,34 @@
+Process alumnos[id:0..A-1]{
+    int idAy;
+    txt respuesta, consulta=...;;
+    admin!llegue(id);
+    ayudantes[*]?turno(idAy);
+    ayudantes[idAy]!consulta(consulta);
+    ayudantes[idAy]?finalizado(respuesta);
+}
+
+Process admin{
+    int idAl, idAy;
+    queue cola;
+    do{
+        alumnos[*]?llegue(idAl){
+            push(cola, idAl);
+        }
+        (!empty(cola)): ayudante[*]?siguiente(idAy){
+            ayudante[idAy]!asignarAlumno(pop(cola));
+        }
+    }
+}
+
+Process ayudantes[id:0..1]{
+    int idAl;
+    txt respuesta, consulta;
+    while(true){
+        admin!siguiente(id);
+        admin?asignarAlumno(idAl);
+        alumno[idAl]!turno(id);
+        alumno[idAl]?consulta(consulta);
+        responder(consulta, respuesta);
+        alumno[idAl]!finalizado(respuesta);
+    }
+}

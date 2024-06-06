@@ -1,0 +1,42 @@
+Process persona[id:0..N-1]{
+    bool urgencia=...;
+    if(urgencia){
+        admin!solicitarUrgencia(id);
+    } else {
+        admin!solicitarNormal(id);
+    }
+    admin?turno();
+    usarTelefono();
+    admin!liberar();
+}
+
+Process admin{
+    bool libre=true;
+    int idP;
+    queue colaU, colaN;
+    do{
+        (libre): persona[*]?solicitarUrgencia(idP){
+            libre=false;
+            persona[idP]!turno();
+        }
+        (libre): persona[*]?solicitarNormal(idP){
+            libre=false;
+            persona[idP]!turno();
+        }
+        (!libre): persona[*]?solicitarUrgencia(idP){
+            push(colaU, idP);
+        }
+        (!libre): persona[*]?solicitarNormal(idP){
+            push(colaN, idP);
+        }
+        (!empty(colaU)): persona[*]?liberar(){
+            persona[pop(colaU)]!turno();
+        }
+        (empty(colaU) && !empty(colaN)): persona[*]?liberar(){
+            persona[pop(colaN)]!turno();
+        }
+        (empty(colaU) && empty(colaN)): persona[*]?liberar(){
+            libre=true;
+        }
+    }
+}
