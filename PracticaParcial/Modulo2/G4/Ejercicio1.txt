@@ -1,0 +1,27 @@
+chan llegue(int id);
+chan turno[N](int id);
+chan empleados[3](list prods);
+chan finalizado[N](float presupuesto);
+
+Process persona [id:0..N-1]{
+    int idE;
+    list prods=...;
+    float presupuesto;
+    send llegue(id);
+    receive turno[id](idE);
+    send empleados[idE](prods);
+    receive finalizado[id](presupuesto);
+}
+
+Process empleado[id:0..2]{
+    int idP;
+    list prods;
+    float presupuesto;
+    while(true){
+        receive llegue(idP);
+        send turno[idP](id);
+        receive empleados[id](prods);
+        calcularPresupuesto(prods, presupuesto);
+        send finalizado[idP](presupuesto);
+    }
+}

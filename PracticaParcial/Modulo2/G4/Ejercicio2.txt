@@ -1,0 +1,21 @@
+Process alumno[id:0..19]{
+    float nota;
+    txt parcial;
+    profesor!llegue(parcial);
+    //Hace el parcial
+    profesor!termine(parcial);
+    profesor?res(nota);
+}
+
+Process profesor{
+    float nota;
+    txt parcial;
+    for(i=0; i<20; i++){
+        generarParcial(parcial);
+        alumno[i]?llegue(parcial);
+        //Espera a que termine
+        alumno[i]?termine(parcial);
+        calcularNota(parcial, nota);
+        alumno[i]!res(nota);
+    }
+}
