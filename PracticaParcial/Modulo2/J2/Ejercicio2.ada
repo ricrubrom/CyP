@@ -31,7 +31,7 @@ Procedure Ejercicio2 IS
                     ACCEPT pedirProducto(prodId:OUT integer) IS
                         prodId:=cod;
                     END pedirProducto;
-                    or WHEN(PedirArticulo'count=0) ACCEPT darVentas(cant:IN integer)IS
+                    or WHEN(PedirProducto'count=0) ACCEPT darVentas(cant:IN integer)IS
                         ventas:=ventas+cant;
                     END datVentas;
                 END SELECT;

@@ -1,10 +1,23 @@
 Process robot[id:0..R-1]{
+    txt pagina;
+    bool posibleInfectado;
     while(true){
-        txt pagina;
-        bool posibleInfectado;
         obtenerSitioWeb(pagina, posibleInfectado);
         if(posibleInfectado){
-            analizador!nuevo(pagina);
+            buffer!nuevo(pagina);
+        }
+    }
+}
+
+Process buffer{
+    txt pagina;
+    queue cola;
+    do{
+        robot[*]?nuevo(pagina){
+            push(cola, pagina);
+        }
+        (!empty(cola)): analizador?solicitar(){
+            analizador!nuevo(pop(cola));
         }
     }
 }
@@ -12,7 +25,8 @@ Process robot[id:0..R-1]{
 Process analizador{
     list paginasInfectadas;
     while(true){
-        analizador?nuevo(pagina);
+        buffer!solicitar();
+        buffer?nuevo(pagina);
         analizar(pagina, virus);
         if(virus){
             push(paginasInfectadas, pagina);

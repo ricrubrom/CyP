@@ -6,7 +6,7 @@ Process competidor[id:0..N-1]{
     organizador?comenzar(desafio);
     while(fallas){
         //Realiza el desafio
-        admin!entrega(id, trabajo);
+        buffer!entrega(id, trabajo);
         supervisor[*]?correcion(fallas);
     }
 }
@@ -16,14 +16,14 @@ Process supervisor[id:0..S-1]{
     solucion trabajo;
     bool fallas;
     while(true){
-        admin!proximoTrabajo(id);
-        admin?entregarTrabajo(idC, trabajo);
+        buffer!proximoTrabajo(id);
+        buffer?entregarTrabajo(idC, trabajo);
         corregir(trabajo, fallas);
         competidor[idC]!correcion(fallas);
     }
 }
 
-Process admin{
+Process buffer{
     int idC, idS;
     solucion trabajo;
     queue cola;

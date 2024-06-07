@@ -1,20 +1,20 @@
 Procedure Ejercicio3 IS
 
     TASK Empleado IS
-        ENTRY atencionCliente(pedido:IN txt)ñ
-        ENTRY atencionDirector(pedido:IN txt)
+        ENTRY atencionCliente(pedido:IN txt);
+        ENTRY atencionDirector(pedido:IN txt);
     END Empleado;
 
-    TASK Directorñ
+    TASK Director;
 
-    TASK TYPE Clienteñ
+    TASK TYPE Cliente;
 
     clientes=array(1..C) of Cliente;
 
     TASK BODY Empleado IS
 
     BEGIN
-        FOR(i:=0 to C+1) LOOP
+        FOR(i:=0 to C) LOOP
             SELECT
                 WHEN (atencionDirector'count=0) ACCEPT atencionCliente(pedido:IN txt) IS
                     atender(pedido);
@@ -37,7 +37,7 @@ Procedure Ejercicio3 IS
                     atendido:=true;
             ELSE
                 DELAY 600;
-            END SELECT
+            END SELECT;
         END LOOP
     END Director;
 

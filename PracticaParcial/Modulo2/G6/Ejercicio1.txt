@@ -34,19 +34,15 @@ Process empleado[id:0..2]{
     list lista;
     float presupuesto;
     while(true){
-        if(empty(espera)){
+        send siguiente(id);
+        receive trabajar(idP);
+        if(idP=-1){
             limpiar();
-        } else{
-            send siguiente(id);
-            receive trabajar(idP);
-            if(idP=-1){
-                limpiar();
-            } else {
-                send turno[idP](id);
-                receive atencion[id](lista);
-                calcularPresupuesto(lista, presupuesto);
-                send finalizado[idP](presupuesto);
-            }
+        } else {
+            send turno[idP](id);
+            receive atencion[id](lista);
+            calcularPresupuesto(lista, presupuesto);
+            send finalizado[idP](presupuesto);
         }
     }
 }

@@ -30,7 +30,7 @@ PROCEDURE Ejercicio3 IS
                         push(colaN, id, documento);
                     END IF
                 END pedido;
-                OR (!empty(colaC) OR !empty(colaN))ACCEPT impresionColor(id:OUT integer; documento:OUT document) IS
+                OR WHEN (!empty(colaC) OR !empty(colaN)) ACCEPT impresionColor(id:OUT integer; documento:OUT document) IS
                     IF(!empty(colaC)) THEN
                         pop(colaC, id, documento)
                     ELSE

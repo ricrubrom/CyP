@@ -25,15 +25,15 @@ Procedure Ejercicio2 IS
         LOOP
             GenerarCodigo(cod);
             totStock[cod]:=0;
-            FOR (i:=1 to 2*S) LOOP
-                SELECT
-                    ACCEPT pedirProducto(prodCod:OUT integer) IS
-                        prodCod:=cod;
-                    END pedirProducto;
-                    OR WHEN(pedirProducto'count=0) ACCEPT entregarStock(stock:IN integer) IS
-                        totStock(cod):=totStock(cod) + stock;
-                    END pedirProducto;
-                END SELECT;
+            FOR (i:=1 to S) LOOP
+                ACCEPT pedirProducto(prodCod:OUT integer) IS
+                prodCod:=cod;
+                END pedirProducto;
+            END LOOP;
+            FOR (i:=1 to S) LOOP
+                ACCEPT entregarStock(stock:IN integer) IS
+                    totStock(cod):=totStock(cod) + stock;
+                END pedirProducto;
             END LOOP;
             //Imprime modelo y stock
         END LOOP;
