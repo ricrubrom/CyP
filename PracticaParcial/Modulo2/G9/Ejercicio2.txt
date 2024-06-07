@@ -1,0 +1,41 @@
+Process jugador[id:0..19]{
+    int idCancha;
+    entrenador!llegue(id);
+    entrenador?asignacion(idCancha);
+    cancha[idCancha]!llegue(id);
+    cancha[idCancha]?empezar();
+    cancha[idCancha]?finalizar();
+    entrenador!termine();
+    entrenador?despedida();
+}
+
+Process cancha[id:1..2]{
+    array arr[10];
+    for(i=0;i<10;i++){
+        jugador[*]?llegue(id);
+        arr[i]=id;
+    }
+    for(i=0;i<10;i++){
+        jugador[arr[i]]!empezar();
+    }
+    delay(2400);
+    for(i=0;i<10;i++){
+        jugador[arr[i]]!finalizar();
+    }
+}
+
+Process entrenador{
+    int idCancha=1;
+    for(i=0;i<20;i++){
+        jugador[*]?llegue(id);
+        jugador[id]!asignacion(idCancha);
+        idCancha= idCancha mod 2 + 1
+    }
+    for(i=0;i<20;i++){
+        jugador[i]?termine();
+    }
+    delay(600)
+    for(i=0;i<20;i++){
+        jugador[i]!despedida();
+    }
+}

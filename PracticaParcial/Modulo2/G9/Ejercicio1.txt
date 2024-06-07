@@ -1,0 +1,48 @@
+chan llegue(int id);
+chan asignacion[20](int idCancha);
+chan llegueCancha[1..2]();
+chan empezar[1..2]();
+chan partidoFin[1..2]();
+chan finalizado();
+chan despedida();
+
+
+Process jugador[id:0..19]{
+    send llegue(id);
+    receive asignacion[id](idCancha);
+    send llegueCancha[idCancha]();
+    receive empezar[idCancha]();
+    receive partidoFin[idCancha]();
+    send finalizado();
+    receive despedida();
+}
+
+Process cancha[id:1..2]{
+    for(i=0; i<10; i++){
+        receive llegueCancha[id]();
+    }
+    for(i=0; i<10; i++){
+        send empezar[id]();
+    }
+    delay(2400);
+    for(i=0; i<10; i++){
+        send partidoFin[id]();
+    }
+}
+
+Process entrenador{
+    int idCancha=1;
+    int idC;
+    for (i=0; i<20; i++){
+        receive llegue(idC);
+        send asignacion[idC](idCancha);
+        idCancha=idCancha mod 2 + 1
+    }
+    for (i=0; i<20; i++){
+        receive finalizado();
+    }
+    delay(600);
+    for (i=0; i<20; i++){
+        send despedida();
+    }
+}

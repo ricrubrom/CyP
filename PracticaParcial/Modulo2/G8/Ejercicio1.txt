@@ -1,0 +1,35 @@
+chan aviso();
+chan finalizado[N]();
+chan turno[N](int idCabina);
+chan liberar(int id; int idCabina);
+chan llegue(int id);
+
+Process cliente[id:0..N-1]{
+    send llegue(id);
+    send aviso();
+    receive turno[id](idCabina);
+    //La usa
+    send liberar(id, idCabina);
+    send aviso();
+    receive finalizado[id]();
+}
+
+Process empleado{
+    queue cabinas=[1..10];
+    int idC;
+    while(true){
+        receive aviso();
+        if{
+            (!empty(llegue) && empty(liberar) && !empty(cabinas)){
+                receive llegue(idC);
+                send turno[idC](pop(cabinas));
+            }
+            (!empty(liberar)){
+                receive liberar(idC, idCabina);
+                push(cabinas, idCabina)
+                Cobrar();
+                send finalizado[idC]();
+            }
+        }
+    }
+}

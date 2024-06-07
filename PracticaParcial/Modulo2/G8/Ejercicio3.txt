@@ -1,0 +1,29 @@
+Process clientes[id:0..N-1]{
+    admin!llegue(id);
+    empleado?finalizado();
+}
+
+Process admin{
+    queue cola;
+    int id;
+    for(i=0; i<2N; i++){
+        if{
+            cliente[*]?llegue(id){
+                push(cola, id);
+            }
+            (!empty(cola)): empleado?siguiente(){
+                empleado!asignar(pop(cola));
+            }
+        }
+    }
+}
+
+Process empleado{
+    int idC;
+    for (i=0; i<N; i++){
+        admin!siguiente();
+        admin?asignar(idC);
+        Atender();
+        cliente[idC]!finalizado();
+    }
+}
