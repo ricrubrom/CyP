@@ -1,0 +1,27 @@
+Process estudiante[id:0..E-1]{
+    buffer!llegue(id);
+    microondas?finaliza();
+}
+
+Process buffer{
+    int idE;
+    queue cola;
+    do{
+        estudiante[*]?llegue(idE){
+            push(cola, idE);
+        }
+        (!empty(cola)): microondas?siguiente(){
+            microondas!asignar(pop(cola));
+        }
+    }
+}
+
+Process microondas{
+    int idP;
+    while(true){
+        buffer!siguiente();
+        buffer?asignar(idP);
+        //Lo usa
+        estudiante[idP]!finaliza();
+    }
+}
